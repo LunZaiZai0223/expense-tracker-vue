@@ -5,17 +5,27 @@
     <!--   <router-link to="/about">About</router-link> -->
     <!-- </nav> -->
     <!-- <router-view /> -->
-    <section>
+    <main>
       <the-header></the-header>
-    </section>
+      <section class="content">
+        <button-list></button-list>
+        <the-form></the-form>
+        <router-view></router-view>
+      </section>
+    </main>
   </div>
 </template>
 
 <script>
 import TheHeader from "./components/TheHeader.vue";
+import TheForm from "./components/TheForm.vue";
+import ButtonList from "./components/ButtonList.vue";
+
 export default {
   components: {
     "the-header": TheHeader,
+    "the-form": TheForm,
+    "button-list": ButtonList,
   },
 };
 </script>
@@ -41,10 +51,15 @@ body {
   font-family: "Inter", sans-serif;
 }
 
-section {
+main {
   width: 500px;
   margin: 0 auto;
   padding: 50px 0;
   border-radius: 3px;
+}
+
+.content {
+  background-color: white;
+  padding: 1.5rem;
 }
 </style>
