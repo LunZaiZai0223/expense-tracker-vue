@@ -27,11 +27,13 @@ export default {
     "the-form": TheForm,
     "button-list": ButtonList,
   },
+  created() {
+    this.$store.dispatch("fetchData");
+  },
 };
 </script>
 
 <style lang="scss">
-// font
 @import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap");
 
 * {

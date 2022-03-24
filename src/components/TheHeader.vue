@@ -6,25 +6,55 @@
         <div class="user-avatar"></div>
         <div>
           <h3>Lun</h3>
-          <span class="record-counter">Current records in total number</span>
+          <span class="record-counter">Current Items: {{ getItemsQty }}</span>
         </div>
       </div>
       <div class="expense-result">
-        <span class="expense-result-title">Total</span>
-        <h2 class="expense-result-content">$ 接數字</h2>
+        <span class="expense-result-title">In Total</span>
+        <h2
+          class="expense-result-content"
+          :class="{
+            'color-txt-paid': totalCalculator < 0,
+            'color-txt-saved': totalCalculator > 0,
+          }"
+        >
+          $ {{ totalCalculator }}
+        </h2>
         <div class="expense-result-count">
           <h4 class="color-txt-paid">
-            <span class="material-icons"> paid </span> - 400
+            <span class="material-icons"> paid </span>- {{ expendCalculator }}
           </h4>
           <h4 class="color-txt-saved">
-            <span class="material-icons"> savings </span>
-            - 400
+            <span class="material-icons"> savings </span> +
+            {{ incomeCalculator }}
           </h4>
         </div>
       </div>
     </div>
   </header>
 </template>
+
+<script>
+export default {
+  data() {
+    return {};
+  },
+  computed: {
+    totalCalculator() {
+      return this.$store.getters.totalCalculator;
+    },
+    incomeCalculator() {
+      return this.$store.getters.incomeCalculator;
+    },
+    expendCalculator() {
+      return this.$store.getters.expendCalculator;
+    },
+    getItemsQty() {
+      return this.$store.getters.getItemsQty;
+    },
+  },
+};
+</script>
 
 <style scoped lang="scss">
 header {
