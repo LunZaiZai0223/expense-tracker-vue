@@ -9,7 +9,6 @@
       <the-header></the-header>
       <section class="content">
         <button-list></button-list>
-        <the-form></the-form>
         <router-view></router-view>
       </section>
     </main>
@@ -18,17 +17,19 @@
 
 <script>
 import TheHeader from "./components/TheHeader.vue";
-import TheForm from "./components/TheForm.vue";
 import ButtonList from "./components/ButtonList.vue";
 
 export default {
   components: {
     "the-header": TheHeader,
-    "the-form": TheForm,
     "button-list": ButtonList,
   },
   created() {
     this.$store.dispatch("fetchData");
+  },
+  mounted() {
+    console.log("mounted");
+    console.log(this.$store.state.dataBase);
   },
 };
 </script>

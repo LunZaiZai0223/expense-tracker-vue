@@ -28,7 +28,6 @@ export default {
       return this.$store.getters.getCategoryPair;
     },
     getIcons() {
-      console.log(this.$store.state.icons);
       return this.$store.state.icons;
     },
   },
@@ -47,7 +46,7 @@ ul {
 }
 
 .icon {
-  font-size: 35px;
+  font-size: 40px;
   color: $color-icon;
   &-wrapper {
     display: flex;
