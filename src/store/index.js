@@ -33,6 +33,18 @@ const categoryPairCreator = (state, type) => {
   }, {});
 };
 
+const unshiftNewItem = (wrapper, payload) => {
+  wrapper.items.unshift(payload);
+};
+
+const updateTotalCount = (wrapper) => {
+  const result = wrapper.items.reduce(
+    (accumulator, currentValue) => (accumulator += currentValue.amount),
+    0
+  );
+  wrapper.total = result;
+};
+
 Vue.use(Vuex);
 
 // const icons = {
@@ -61,11 +73,14 @@ export default new Vuex.Store({
         items: [],
       },
     },
+
     icons: {
-      medical: "healing",
+      medicine: "healing",
       shopping: "shopping_cart",
       food: "restaurant",
       other: "dynamic_feed",
+      living: "living",
+      // 除了 income 其他都是 expend
       income: "savings",
     },
   },
@@ -74,6 +89,7 @@ export default new Vuex.Store({
       return state.dataBase.income.total - state.dataBase.expend.total;
     },
     incomeCalculator(state) {
+      console.log("incomeCalculator");
       return state.dataBase.income.items.reduce((accumulator, currentValue) => {
         accumulator += currentValue.amount;
         return accumulator;
@@ -92,62 +108,13 @@ export default new Vuex.Store({
     },
     // {category, amount}
     getCategoryPair(state) {
-      const newArray = state.dataBase.expend.categories.concat(
-        state.dataBase.income.categories
-      );
-      console.log(newArray);
-      // return newArray;
+      console.log("hit getCategoryPair");
       const combinedItems = state.dataBase.expend.items.concat(
         state.dataBase.income.items
       );
       console.log(combinedItems);
 
-      // const result = [];
-      // amount: 500
-      // category: "food"
-      // content: "晚餐"
-      // date: "2022-03-16"
-      // id: 18
-      // combinedItems.forEach((value) => {
-      //   result.filter(())
-      //
-      // })
-      //
-      // const result = combinedItems.reduce((accumulator, currentValue) => {
-      //   const test = accumulator.filter((pair) => {
-      //     if (pair.category === currentValue.category) {
-      //       return pair;
-      //     }
-      //   });
-      //
-      //
-      // }, []);
-      //
-      // return combinedItems;
-
-      // const expendPair = state.dataBase.expend.items.reduce(
-      //   (accumulator, currentValue) => {
-      //     // category, amount
-      //     if (accumulator[currentValue.category]) {
-      //       accumulator[currentValue.category] += currentValue.amount;
-      //     } else {
-      //       accumulator[currentValue.category] = currentValue.amount;
-      //     }
-      //     return accumulator;
-      //   },
-      //   {}
-      // );
-
       const expendPair = categoryPairCreator(state, "expend");
-      //
-      // const incomePair = state.dataBase.income.items.reduce(
-      //   (accumulator, currentValue) => {
-      //     accumulator.income += currentValue.amount;
-      //     return accumulator;
-      //   },
-      //   { income: 0 }
-      // );
-
       const incomePair = categoryPairCreator(state, "income");
 
       console.log(expendPair);
@@ -189,6 +156,29 @@ export default new Vuex.Store({
         );
       });
       console.log(state.dataBase);
+    },
+    addNewItem(state, payload) {
+      // amount: 0
+      // category: "income"
+      // content: ""
+      // date: ""
+      // id: 1648203005
+      // type: "income"
+      const { type } = payload;
+      console.log(type);
+      // TODO: 思考解構
+      // const a = [{x: 1}, {y: 2}, {z: 3}];
+      // const [r, t, y] = a;
+      // r.x = 2;
+      // console.log(a) => [{x: 2}, {y: 2}, {z:3}]
+      // 第一關 expend / income
+      // 第二關 推入 items
+      // 第三關 再寫新的任務更新總額
+      const wrapper = state.dataBase[type];
+      console.log(wrapper);
+      unshiftNewItem(wrapper, payload);
+      console.log(state.dataBase[type]);
+      updateTotalCount(wrapper);
     },
   },
   actions: {
