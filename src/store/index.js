@@ -45,17 +45,15 @@ const updateTotalCount = (wrapper) => {
   wrapper.total = result;
 };
 
+const getStateWrapper = (state, category) => {
+  return state.dataBase[category];
+};
+
+const getStateOuterKey = (category) => {
+  return category === "income" ? "income" : "expend";
+};
+
 Vue.use(Vuex);
-
-// const icons = {
-//   medical: 'healing',
-//   shopping: 'shopping_cart',
-//   food: 'restaurant',
-//   other: 'dynamic_feed',
-//   income: 'savings',
-// };
-
-// 靠著更改 state 後新增新的 pair？
 
 export default new Vuex.Store({
   state: {
@@ -125,6 +123,17 @@ export default new Vuex.Store({
       console.log(resultObj);
       return resultObj;
     },
+    // 更新 vuex 的 state，所以會觸發 getters，由 vuex getters 傳資料給 component
+    // 目前沒使用，filter 後刪除資料是更新 component 自己 filter 出來的 state
+    // filterItem(state) {
+    //   return (date) => {
+    //     const expendData = state.dataBase.expend.items;
+    //     const incomeData = state.dataBase.income.items;
+    //     const combined = expendData.concat(incomeData);
+    //     const result = combined.filter((item) => item.date === date);
+    //     return result;
+    //   };
+    // },
   },
   mutations: {
     initDataBaseData(state, payload) {
@@ -158,19 +167,8 @@ export default new Vuex.Store({
       console.log(state.dataBase);
     },
     addNewItem(state, payload) {
-      // amount: 0
-      // category: "income"
-      // content: ""
-      // date: ""
-      // id: 1648203005
-      // type: "income"
       const { type } = payload;
       console.log(type);
-      // TODO: 思考解構
-      // const a = [{x: 1}, {y: 2}, {z: 3}];
-      // const [r, t, y] = a;
-      // r.x = 2;
-      // console.log(a) => [{x: 2}, {y: 2}, {z:3}]
       // 第一關 expend / income
       // 第二關 推入 items
       // 第三關 再寫新的任務更新總額
@@ -178,6 +176,36 @@ export default new Vuex.Store({
       console.log(wrapper);
       unshiftNewItem(wrapper, payload);
       console.log(state.dataBase[type]);
+      updateTotalCount(wrapper);
+    },
+    // 刪除 item
+    //   HOW:
+    //     1. 點擊知道 ID
+    //     2. 除了 income 其餘都是 expend
+    //     3. updateTotalCount 的 param 就是進入 expend / income 的 value
+    //     4. 刪除 state 的資料 -> 呼叫 updateTotalCount 更改該類別（expend / income）的 total 值
+    deleteItem(state, payload) {
+      console.log("hit delete in store");
+      const { id, category } = payload;
+      const dataBaseOuterKey = getStateOuterKey(category);
+      // const wrapper = state.dataBase[dataBaseOuterKey];
+      const wrapper = getStateWrapper(state, dataBaseOuterKey);
+      const filter = wrapper.items.filter((item) => item.id !== id);
+      wrapper.items = filter;
+      updateTotalCount(wrapper);
+    },
+    updateItem(state, { modalData, newInput }) {
+      console.log("hit update in vuex");
+      const { category, id } = modalData;
+      const dataBaseOuterKey = getStateOuterKey(category);
+      const wrapper = getStateWrapper(state, dataBaseOuterKey);
+      // 用 filter 找出要的資料，目的只有找出後用 splice 更改值，所以不需要回傳
+      wrapper.items.filter((item, index, arraySelf) => {
+        if (item.id === id) {
+          arraySelf.splice(index, 1, newInput);
+          return item;
+        }
+      });
       updateTotalCount(wrapper);
     },
   },

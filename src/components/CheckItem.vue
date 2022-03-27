@@ -1,6 +1,6 @@
 <template>
   <section>
-    <base-modal v-if="isModalActive" @closeModal="closeModal">
+    <base-modal v-if="isModalActive" @closeModal="closeModal(), endModalEdit()">
       <template #header>
         <div class="modal-icon-wrapper">
           <span class="material-icons modal-icon">{{
@@ -14,6 +14,7 @@
             type="text"
             :value="modalData.content"
             :readonly="!isModalEditing"
+            ref="inputContent"
           />
         </div>
         <div class="modal-input-wrapper">
@@ -21,6 +22,7 @@
             type="date"
             :value="modalData.date"
             :readonly="!isModalEditing"
+            ref="inputDate"
           />
         </div>
         <div class="modal-input-wrapper">
@@ -33,20 +35,26 @@
               'color-txt-saved': modalData.category === 'income',
               'color-txt-paid': modalData.category !== 'income',
             }"
+            ref="inputAmount"
           />
         </div>
       </template>
       <template #footer>
         <div class="modal-button-wrapper">
           <div class="modal-default-wrapper" v-if="!isModalEditing">
-            <button class="modal-button-edit" @click="startModalEdit">
+            <button class="modal-button-edit" @click="startModalEdit()">
               Edit
             </button>
-            <button class="modal-button-danger">Delete</button>
+            <button class="modal-button-danger" @click="deleteItem(modalData)">
+              Delete
+            </button>
             <button class="modal-button-info" @click="closeModal">Back</button>
           </div>
           <div class="modal-edit-wrapper" v-if="isModalEditing">
-            <button class="modal-button-normal" @click="endModalEdit">
+            <button
+              class="modal-button-normal"
+              @click="endModalEdit(), saveUpdatedItem(modalData)"
+            >
               Save
             </button>
             <button class="modal-button-info" @click="endModalEdit">
@@ -56,6 +64,7 @@
         </div>
       </template>
     </base-modal>
+
     <h1>Check Items</h1>
     <filter-item-form
       :isFilter="isFilter"
@@ -93,7 +102,7 @@
         v-for="{ id, content, category, amount, date } in filterList"
         :key="id"
       >
-        <div class="icon-wrapper">
+        <div class="icon-wrapper" @click="openModal(id)">
           <span class="material-icons icon">{{ getIcons[category] }}</span>
         </div>
         <div class="content-wrapper">
@@ -134,7 +143,7 @@ export default {
     return {
       isFilter: false,
       filterList: [],
-      isModalActive: true,
+      isModalActive: false,
       isModalEditing: false,
       modalData: [],
     };
@@ -184,6 +193,34 @@ export default {
     },
     endModalEdit() {
       this.isModalEditing = false;
+    },
+    deleteItem(modalData) {
+      console.log("hit delete in component");
+      const manuallyFilterLocalData = this.filterList.filter(
+        (item) => item.id !== modalData.id
+      );
+      this.filterList = manuallyFilterLocalData;
+      this.isModalActive = false;
+      this.$store.commit("deleteItem", modalData);
+      console.log("end of component delete");
+    },
+    saveUpdatedItem(modalData) {
+      console.log("save update");
+      const newContent = this.$refs.inputContent.value;
+      const newDate = this.$refs.inputDate.value;
+      const newAmount = this.$refs.inputAmount.value;
+      this.$store.commit("updateItem", {
+        modalData,
+        newInput: {
+          amount: parseInt(newAmount),
+          content: newContent,
+          date: newDate,
+          category: modalData.category,
+          id: modalData.id,
+        },
+      });
+      const [foundItem] = findItem(this.getList, modalData.id);
+      this.modalData = foundItem;
     },
   },
 };
@@ -282,6 +319,7 @@ ul {
     cursor: pointer;
     border-radius: 5px;
     color: White;
+    font-weight: 700;
   }
   .modal-button-normal {
     background-color: $color-button-bg;
