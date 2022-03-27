@@ -12,6 +12,5 @@
   gap: 0.5rem;
   margin-top: 0.75rem;
   align-items: center;
-  cursor: pointer;
 }
 </style>
