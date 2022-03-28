@@ -1,5 +1,12 @@
 # expense-tracker-vue
 
+## TODO:
+
+- [ ] Chart.js
+- [ ] input validation
+- [ ] RWD
+- [ ] better README.md
+
 ## Project setup
 ```
 npm install
