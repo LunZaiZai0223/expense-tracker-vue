@@ -64,7 +64,7 @@ button[type="submit"] {
 
 .reset {
   display: flex;
-  justify-content: end;
+  justify-content: flex-end;
   span {
     margin-top: 0.75rem;
     background-color: $color-button-bg-light;

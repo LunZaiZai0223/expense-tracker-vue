@@ -67,7 +67,7 @@ ul {
   display: flex;
   flex-direction: column;
   justify-content: center;
-  align-items: start;
+  align-items: flex-start;
   padding-bottom: 1rem;
   padding-right: 0.5rem;
   padding-left: 1.5rem;
